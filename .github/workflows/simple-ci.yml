@@ -4,29 +4,45 @@ on:
       - main
   pull_request:
 
-name: Simple Rust CI with PostgreSQL
+name: Simple Rust CI
 
 jobs:
   check:
     name: Check, Lint, Format, Test, and PostgreSQL
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U user"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      APP_ENV: ${{ secrets.APP_ENV }}
+      APP_HOST: ${{ secrets.APP_HOST }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      CERT_FILE: ${{ secrets.CERT_FILE }}
+      KEY_FILE: ${{ secrets.KEY_FILE }}
 
     steps:
       - uses: actions/checkout@v3
+
+      # Start PostgreSQL container manually with secrets from env
+      - name: Start PostgreSQL Container
+        run: |
+          docker run --name ${{env.DB_HOST}} -d \
+          -e POSTGRES_USER=${{env.POSTGRES_USER}} \
+          -e POSTGRES_PASSWORD=${{env.POSTGRES_PASSWORD}} \
+          -e POSTGRES_DB=${{env.POSTGRES_DB}} \
+          -p ${{env.DB_PORT}}:${{env.DB_PORT}} postgres:13
+
+      # Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL
+        run: |
+          until docker exec ${{env.DB_HOST}} pg_isready -U ${{env.POSTGRES_USER}}; do
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
 
       # Install Rust toolchain
       - uses: actions-rs/toolchain@v1
@@ -52,8 +68,12 @@ jobs:
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      # Run tests
+      # Run tests with DATABASE_URL
       - name: Run tests
         env:
-          DATABASE_URL: postgres://user:password@localhost:5432/test_db
+          DATABASE_URL: ${{env.DATABASE_URL}}
         run: cargo test --release
+
+      # Cleanup
+      - name: Stop and Remove PostgreSQL Container
+        run: docker stop ${{env.DB_HOST}} && docker rm ${{env.DB_HOST}}

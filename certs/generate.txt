@@ -1,0 +1,6 @@
+generate private key = openssl genpkey -algorithm RSA -out private_key.pem
+generate cert = openssl req -new -x509 -key private_key.pem -out cert.pem -days 365 -subj "/CN=localhost"
+
+
+
+

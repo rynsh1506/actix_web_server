@@ -4,12 +4,27 @@ on:
       - main
   pull_request:
 
-name: Simple Rust CI
+name: Simple Rust CI with PostgreSQL
 
 jobs:
   check:
-    name: Check, Lint, Format, and Test
+    name: Check, Lint, Format, Test, and PostgreSQL
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - uses: actions/checkout@v3
 
@@ -39,4 +54,6 @@ jobs:
 
       # Run tests
       - name: Run tests
+        env:
+          DATABASE_URL: postgres://user:password@localhost:5432/test_db
         run: cargo test --release

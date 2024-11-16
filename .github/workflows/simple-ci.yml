@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+name: Simple Rust CI
+
+jobs:
+  check:
+    name: Check, Lint, Format, and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Install Rust toolchain
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      # Install Rustfmt and Clippy
+      - name: Install Rustfmt and Clippy
+        run: |
+          rustup component add rustfmt
+          rustup component add clippy
+
+      # Install dependencies
+      - name: Install dependencies
+        run: cargo build --release
+
+      # Run fmt (checks if code is formatted)
+      - name: Run rustfmt
+        run: cargo fmt -- --check
+
+      # Run clippy (for linting)
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      # Run tests
+      - name: Run tests
+        run: cargo test --release

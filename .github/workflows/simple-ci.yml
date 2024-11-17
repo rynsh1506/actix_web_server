@@ -27,6 +27,7 @@ jobs:
           echo "CERT_FILE=${{ secrets.CERT_FILE }}" >> .env
           echo "KEY_FILE=${{ secrets.KEY_FILE }}" >> .env
           echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
+          cat .env
 
       # Install Docker Compose
       - name: Install Docker Compose

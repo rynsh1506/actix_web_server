@@ -26,7 +26,7 @@ jobs:
           echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
           echo "CERT_FILE=${{ secrets.CERT_FILE }}" >> .env
           echo "KEY_FILE=${{ secrets.KEY_FILE }}" >> .env
-          echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
+          echo "DATABASE_URL=postgresql://${{secrets.POSTGRES_USER}}:${{env.POSTGRES_PASSWORD}}@${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.POSTGRES_DB}}" >> .env
           cat .env
 
       # Install Docker Compose

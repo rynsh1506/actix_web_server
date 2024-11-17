@@ -36,7 +36,7 @@ jobs:
 
       # Start PostgreSQL container using Docker Compose
       - name: Set up Docker Compose for PostgreSQL
-        run: docker-compose up docker-compose.db.yml -d
+        run: docker-compose -f docker-compose.db.yml up -d -V
 
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL

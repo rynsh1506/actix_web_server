@@ -11,20 +11,22 @@ jobs:
     name: Check, Lint, Format, Test, and PostgreSQL
     runs-on: ubuntu-latest
 
-    env:
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      APP_ENV: ${{ secrets.APP_ENV }}
-      APP_HOST: ${{ secrets.APP_HOST }}
-      APP_PORT: ${{ secrets.APP_PORT }}
-      CERT_FILE: ${{ secrets.CERT_FILE }}
-      KEY_FILE: ${{ secrets.KEY_FILE }}
-
     steps:
       - uses: actions/checkout@v3
+
+      - name: Setup .env file
+        run: |
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "APP_ENV=${{ secrets.APP_ENV }}" >> .env
+          echo "APP_HOST=${{ secrets.APP_HOST }}" >> .env
+          echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
+          echo "CERT_FILE=${{ secrets.CERT_FILE }}" >> .env
+          echo "KEY_FILE=${{ secrets.KEY_FILE }}" >> .env
+          echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
 
       # Install Docker Compose
       - name: Install Docker Compose
@@ -70,8 +72,6 @@ jobs:
 
       # Run tests with DATABASE_URL
       - name: Run tests
-        env:
-          DATABASE_URL: postgresql://${{env.POSTGRES_USER}}:${{env.POSTGRES_PASSWORD}}@db${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.POSTGRES_DB}}?sslmode=prefer
         run: cargo test --release
 
       # Cleanup

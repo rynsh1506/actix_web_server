@@ -38,14 +38,6 @@ jobs:
       - name: Set up Docker Compose for PostgreSQL
         run: docker-compose -f docker-compose.db.yml up -d -V
 
-      # Wait for PostgreSQL to be ready
-      - name: Wait for PostgreSQL
-        run: |
-          until docker exec $(docker ps -q --filter "name=db") pg_isready -U ${{ env.POSTGRES_USER }}; do
-            echo "Waiting for PostgreSQL..."
-            sleep 5
-          done
-
       # Install Rust toolchain
       - uses: actions-rs/toolchain@v1
         with:

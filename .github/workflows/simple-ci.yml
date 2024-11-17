@@ -20,7 +20,6 @@ jobs:
       APP_ENV: ${{ secrets.APP_ENV }}
       APP_HOST: ${{ secrets.APP_HOST }}
       APP_PORT: ${{ secrets.APP_PORT }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       CERT_FILE: ${{ secrets.CERT_FILE }}
       KEY_FILE: ${{ secrets.KEY_FILE }}
 
@@ -70,6 +69,8 @@ jobs:
 
       # Run tests with DATABASE_URL
       - name: Run tests
+        env:
+          DATABASE_URL: postgresql://${{env.POSTGRES_USER}}:${{env.POSTGRES_PASSWORD}}@${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.POSTGRES_DB}}?sslmode=prefer
         run: cargo test --release
 
       # Cleanup

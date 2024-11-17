@@ -14,7 +14,7 @@ jobs:
     env:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_HOST: ${{ secrets.DB_HOST }}
       APP_ENV: ${{ secrets.APP_ENV }}
@@ -26,19 +26,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Start PostgreSQL container manually with secrets from env
-      - name: Start PostgreSQL Container
-        run: |
-          docker run --name ${{env.DB_HOST}} -d \
-          -e POSTGRES_USER=${{env.POSTGRES_USER}} \
-          -e POSTGRES_PASSWORD=${{env.POSTGRES_PASSWORD}} \
-          -e POSTGRES_DB=${{env.POSTGRES_DB}} \
-          -p ${{env.DB_PORT}}:${{env.DB_PORT}} postgres:13
+      # Start PostgreSQL container using Docker Compose
+      - name: Set up Docker Compose for PostgreSQL
+        run: docker-compose up docker-compose.db.yml -d
 
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL
         run: |
-          until docker exec ${{env.DB_HOST}} pg_isready -U ${{env.POSTGRES_USER}}; do
+          until docker exec $(docker ps -q --filter "name=db") pg_isready -U ${{ env.POSTGRES_USER }}; do
             echo "Waiting for PostgreSQL..."
             sleep 5
           done
@@ -70,9 +65,9 @@ jobs:
       # Run tests with DATABASE_URL
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://${{env.POSTGRES_USER}}:${{env.POSTGRES_PASSWORD}}@${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.POSTGRES_DB}}?sslmode=prefer
+          DATABASE_URL: postgresql://${{env.POSTGRES_USER}}:${{env.POSTGRES_PASSWORD}}@db${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.POSTGRES_DB}}?sslmode=prefer
         run: cargo test --release
 
       # Cleanup
-      - name: Stop and Remove PostgreSQL Container
-        run: docker stop ${{env.DB_HOST}} && docker rm ${{env.DB_HOST}}
+      - name: Cleanup Docker
+        run: docker-compose down

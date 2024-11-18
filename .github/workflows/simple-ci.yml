@@ -42,7 +42,7 @@ jobs:
       # Install Rust toolchain
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.27.1
+          toolchain: stable
           override: true
           components: rustfmt, clippy
 

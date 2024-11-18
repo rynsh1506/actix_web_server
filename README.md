@@ -1,6 +1,6 @@
-# Dokumentasi Proyek Web Server dengan Actix Web
+# Dokumentasi Template Project Web Server dengan Actix Web
 
-## 1. Struktur Proyek
+## 1. Struktur Project
 
 Berikut adalah struktur direktori proyek:
 

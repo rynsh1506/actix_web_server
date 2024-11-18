@@ -66,8 +66,6 @@ File ini menyimpan konfigurasi:
 
 # Environment Configuration
 ```env
-env
-Salin kode
 # Environment Configuration
 APP_ENV=
 APP_PORT=

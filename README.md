@@ -60,11 +60,10 @@ web_server/
 ├── LICENSE
 └── README.md
 ```
-2. Konfigurasi Environment Variables
+## 2. Konfigurasi Environment Variables
 .env
 File ini menyimpan konfigurasi:
 
-# Environment Configuration
 ```env
 # Environment Configuration
 APP_ENV=
@@ -89,7 +88,7 @@ DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_
 CERT_FILE=
 KEY_FILE=
 ```
-3. Docker Compose
+## 3. Docker Compose
 docker-compose.db.yml
 Untuk menjalankan database PostgreSQL:
 
@@ -163,7 +162,7 @@ volumes:
   postgres_data:
 ```
 
-4. Setup dan Jalankan Proyek
+## 4. Setup dan Jalankan Proyek
    
 Langkah 1: Persiapan Lingkungan
 Salin .env.example ke .env dan sesuaikan variabel sesuai kebutuhan.
@@ -177,6 +176,7 @@ docker-compose -f docker-compose.db.yml up -d
 ```
 Langkah 3: Menjalankan Aplikasi dan Database
 Gunakan file docker-compose.yml untuk menjalankan seluruh aplikasi:
+
 ```bash
 docker-compose up -d
 ```

@@ -196,6 +196,7 @@ Setelah proyek selesai dibangun, Anda dapat menjalankan aplikasi menggunakan per
 cargo run
 ```
 > **Catatan**: Perintah cargo run secara otomatis akan melakukan build terlebih dahulu. Jika Anda sudah melakukan build sebelumnya, proses build bisa dilewati dengan menjalankan cargo run --release (untuk mode produksi) atau cargo run --no-build (untuk menjalankan aplikasi tanpa build ulang, jika build sudah ada).
+
 Langkah 6: Menggunakan cargo watch untuk Monitoring Perubahan
 Jika Anda ingin aplikasi berjalan otomatis setiap kali ada perubahan pada kode, Anda bisa menggunakan cargo watch untuk memonitor perubahan dan menjalankan ulang aplikasi setiap kali kode diubah:
 
@@ -215,29 +216,3 @@ Anda juga dapat menjalankan pengujian unit dengan perintah:
 ```bash
 cargo test
 ```
-
-
-
-
-
-
-
-Berikut adalah penambahan catatan pada Langkah 5 dan Langkah 6 sesuai permintaan Anda:
-
-Langkah 5: Menjalankan Aplikasi
-Setelah proyek selesai dibangun, Anda dapat menjalankan aplikasi menggunakan perintah berikut:
-
-bash
-Salin kode
-cargo run
-Catatan: Perintah cargo run secara otomatis akan melakukan build terlebih dahulu. Jika Anda sudah melakukan build sebelumnya, proses build bisa dilewati dengan menjalankan cargo run --release (untuk mode produksi) atau cargo run --no-build (untuk menjalankan aplikasi tanpa build ulang, jika build sudah ada).
-
-Langkah 6: Menggunakan cargo watch untuk Monitoring Perubahan
-Jika Anda ingin aplikasi berjalan otomatis setiap kali ada perubahan pada kode, Anda bisa menggunakan cargo watch untuk memonitor perubahan dan menjalankan ulang aplikasi setiap kali kode diubah:
-
-bash
-Salin kode
-cargo watch -x run
-
-
-

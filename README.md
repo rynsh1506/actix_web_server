@@ -90,7 +90,7 @@ KEY_FILE=
 ```
 ## 3. Docker Compose Configuration
 
-docker-compose.db.yml
+```docker-compose.db.yml```
 To run the PostgreSQL database:
 
 ```yml
@@ -119,7 +119,7 @@ volumes:
   postgres_data:
 ```
 
-docker-compose.yml
+```docker-compose.yml```
 To run the entire application and database:
 
 ``` yml

@@ -163,34 +163,34 @@ volumes:
 ```
 
 ## 4. Setup dan Jalankan Proyek
-Langkah 1: Persiapan Lingkungan
+### step 1: Persiapan Lingkungan
 Salin file .env.example menjadi .env dan sesuaikan variabel lingkungan sesuai kebutuhan Anda.
 Pastikan Docker dan Docker Compose sudah terinstal di sistem Anda.
 
-Langkah 2: Menjalankan Database Saja
+### step 2: Menjalankan Database Saja
 Jika Anda hanya perlu menjalankan database, gunakan file docker-compose.db.yml untuk menjalankan database:
 
 ```bash
 docker-compose -f docker-compose.db.yml up -d
 ```
 
-Langkah 3: Menjalankan Aplikasi dan Database
+### step 3: Menjalankan Aplikasi dan Database
 Jika Anda membutuhkan aplikasi dan database berjalan bersamaan, gunakan file docker-compose.yml untuk menjalankan seluruh aplikasi:
 
 ```bash
 docker-compose up -d
 ```
-> **Catatan**: Jika Anda hanya memerlukan database, cukup jalankan langkah 2 saja.
+> **Note**: Jika Anda hanya memerlukan database, cukup jalankan step 2 saja.
 
 
-Langkah 4: Membangun Proyek
+### step 4: Membangun Proyek
 Sebelum menjalankan aplikasi, pastikan proyek Anda sudah dibangun terlebih dahulu. Gunakan perintah berikut untuk membangun proyek:
 
 ```bash
 cargo build
 ```
 
-### Langkah 5: Menjalankan Aplikasi
+### step 5: Menjalankan Aplikasi
 Setelah proyek selesai dibangun, Anda dapat menjalankan aplikasi menggunakan perintah berikut:
 
 ```bash
@@ -199,7 +199,7 @@ cargo run
 > **Catatan**: Perintah cargo run secara otomatis akan melakukan build terlebih dahulu. Jika Anda sudah melakukan build sebelumnya, proses build bisa dilewati dengan menjalankan ```bash cargo run --release``` (untuk mode produksi) atau ```basg cargo run --no-build``` (untuk menjalankan aplikasi tanpa build ulang, jika build sudah ada).
 
 
-Langkah 6: Menggunakan cargo watch untuk Monitoring Perubahan
+### step 6: Menggunakan cargo watch untuk Monitoring Perubahan
 Jika Anda ingin aplikasi berjalan otomatis setiap kali ada perubahan pada kode, Anda bisa menggunakan cargo watch untuk memonitor perubahan dan menjalankan ulang aplikasi setiap kali kode diubah:
 
 ```bash
@@ -213,7 +213,7 @@ cargo install cargo-watch
 ```
 Setelah itu, Anda bisa menggunakan cargo watch untuk memonitor perubahan secara otomatis.
 
-Langkah 7: Menjalankan Pengujian
+### step 7: Menjalankan Pengujian
 Anda juga dapat menjalankan pengujian unit dengan perintah:
 
 ```bash

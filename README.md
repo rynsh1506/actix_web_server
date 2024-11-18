@@ -164,9 +164,11 @@ volumes:
 ```
 
 4. Setup dan Jalankan Proyek
+   
 Langkah 1: Persiapan Lingkungan
 Salin .env.example ke .env dan sesuaikan variabel sesuai kebutuhan.
 Pastikan Docker dan Docker Compose terinstal di sistem Anda.
+
 Langkah 2: Menjalankan Database Saja
 Gunakan file docker-compose.db.yml untuk menjalankan database:
 

@@ -92,8 +92,8 @@ KEY_FILE=
 3. Docker Compose
 docker-compose.db.yml
 Untuk menjalankan database PostgreSQL:
-yaml
-Salin kode
+
+```yml
 version: "3.8"
 
 services:
@@ -117,12 +117,12 @@ networks:
 
 volumes:
   postgres_data:
+```
 
 docker-compose.yml
 Untuk menjalankan seluruh aplikasi dan database:
 
-yaml
-Salin kode
+``` yml
 version: '3.8'
 
 services:
@@ -161,7 +161,7 @@ networks:
 
 volumes:
   postgres_data:
-
+```
 
 4. Setup dan Jalankan Proyek
 Langkah 1: Persiapan Lingkungan
@@ -170,20 +170,16 @@ Pastikan Docker dan Docker Compose terinstal di sistem Anda.
 Langkah 2: Menjalankan Database Saja
 Gunakan file docker-compose.db.yml untuk menjalankan database:
 
-bash
-Salin kode
+```bash
 docker-compose -f docker-compose.db.yml up -d
+```
 Langkah 3: Menjalankan Aplikasi dan Database
 Gunakan file docker-compose.yml untuk menjalankan seluruh aplikasi:
-
-bash
-Salin kode
+```bash
 docker-compose up -d
+```
 Langkah 4: Menjalankan Pengujian
 Jalankan pengujian unit dengan perintah:
-
-bash
-Salin kode
+```bash
 cargo test
-
 ```

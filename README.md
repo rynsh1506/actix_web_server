@@ -190,7 +190,7 @@ Sebelum menjalankan aplikasi, pastikan proyek Anda sudah dibangun terlebih dahul
 cargo build
 ```
 
-Langkah 5: Menjalankan Aplikasi
+### Langkah 5: Menjalankan Aplikasi
 Setelah proyek selesai dibangun, Anda dapat menjalankan aplikasi menggunakan perintah berikut:
 
 ```bash

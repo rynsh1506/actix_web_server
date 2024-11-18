@@ -1,5 +1,5 @@
 use chrono::{offset::FixedOffset, Utc};
-use log::LevelFilter;
+use log::{Level, LevelFilter};
 use std::io::Write;
 
 pub fn init_logger() {
@@ -13,11 +13,11 @@ pub fn init_logger() {
 
             // Apply color based on log level
             let level_color = match level {
-                log::Level::Error => "\x1b[31m", // Red
-                log::Level::Warn => "\x1b[33m",  // Yellow
-                log::Level::Info => "\x1b[32m",  // Green
-                log::Level::Debug => "\x1b[34m", // Blue
-                log::Level::Trace => "\x1b[37m", // White
+                Level::Error => "\x1b[31m", // Red
+                Level::Warn => "\x1b[33m",  // Yellow
+                Level::Info => "\x1b[32m",  // Green
+                Level::Debug => "\x1b[34m", // Blue
+                Level::Trace => "\x1b[37m", // White
             };
 
             let reset_color = "\x1b[0m"; // Reset color
@@ -36,6 +36,6 @@ pub fn init_logger() {
             // Write the formatted message with a newline
             writeln!(buf, "{}", message)
         })
-        .filter_level(LevelFilter::Info) // Adjust level as needed
+        .filter_level(LevelFilter::Debug) // Adjust level as needed
         .init();
 }

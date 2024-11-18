@@ -7,7 +7,6 @@ mod tests {
     #[actix_web::test]
     async fn test_health_check() {
         // Setup the test server with the health check service
-
         let app =
             test::init_service(App::new().route("/health", web::get().to(health_check))).await;
 

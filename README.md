@@ -219,3 +219,10 @@ Anda juga dapat menjalankan pengujian unit dengan perintah:
 ```bash
 cargo test
 ```
+## 5. Suggestions and Feedback
+
+This documentation is made to help you understand how to run this project. If anything is unclear or if there's a simpler way to explain something, I would really appreciate it if you could provide feedback.
+
+Since I’m still a beginner, I’m totally open to suggestions or constructive criticism about this Actix Web project template or the documentation I’ve created. Is there anything that can be improved or added? I really want to learn more and make this project better.
+
+Feel free to leave comments or suggestions. Thanks a lot!

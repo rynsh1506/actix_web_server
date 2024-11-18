@@ -175,7 +175,7 @@ Gunakan file docker-compose.db.yml untuk menjalankan database:
 docker-compose -f docker-compose.db.yml up -d
 ```
 Langkah 3: Menjalankan Aplikasi dan Database
-Gunakan file docker-compose.yml untuk menjalankan seluruh aplikasi(Optional):
+Gunakan file docker-compose.yml untuk menjalankan seluruh aplikasi (Optional jika hanya butuh database saja maka yang atas cukup):
 
 ```bash
 docker-compose up -d

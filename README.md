@@ -181,7 +181,6 @@ If you need both the application and database running together, use the docker-c
 ```bash
 docker-compose up -d
 ```
-> **Note**: If you only need the database, you can skip this step and run Step 2.
 
 
 ### step 4: Build the Project

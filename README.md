@@ -196,7 +196,7 @@ Once the project is built, you can run the application with the following comman
 ```bash
 cargo run
 ```
-> **Note**: The ```bash cargo run``` command will automatically build the project first. If you have already built the project, you can skip the build step by running
+> **Note**: The ```cargo run``` command will automatically build the project first. If you have already built the project, you can skip the build step by running
 > ```bash
 > cargo run --release
 > ```

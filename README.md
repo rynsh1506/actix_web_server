@@ -59,37 +59,13 @@ web_server/
 ├── Dockerfile
 ├── LICENSE
 └── README.md
+```
 2. Konfigurasi Environment Variables
 .env
-File ini menyimpan konfigurasi lokal:
+File ini menyimpan konfigurasi:
 
-env
-Salin kode
 # Environment Configuration
-APP_ENV=development
-APP_PORT=8080
-APP_HOST=127.0.0.1
-APP_BASE_URL=http://localhost:8080
-
-# JWT Configuration
-JWT_SECRET_KEY=your_jwt_secret_key
-JWT_EXPIRATION_TIME=3600
-
-# PostgreSQL Database Configuration
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=password
-POSTGRES_DB=my_database
-DB_HOST=localhost
-DB_PORT=5432
-
-DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}?sslmode=prefer
-
-# SSL Configuration
-CERT_FILE=certs/cert.pem
-KEY_FILE=certs/private_key.pem
-.env.example
-Contoh file .env untuk dokumentasi:
-
+```env
 env
 Salin kode
 # Environment Configuration
@@ -114,6 +90,7 @@ DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_
 # SSL Configuration
 CERT_FILE=
 KEY_FILE=
+```
 3. Docker Compose
 docker-compose.db.yml
 Untuk menjalankan database PostgreSQL:

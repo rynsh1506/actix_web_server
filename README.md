@@ -1,8 +1,8 @@
-# Dokumentasi Template Project Web Server dengan Actix Web
+# Web Server Project Template Documentation with Actix Web
 
-## 1. Struktur Project
+## 1. Project Structure
 
-Berikut adalah struktur direktori proyek:
+Here’s the directory structure for the project:
 
 ```plaintext
 web_server/
@@ -60,9 +60,9 @@ web_server/
 ├── LICENSE
 └── README.md
 ```
-## 2. Konfigurasi Environment Variables
-.env
-File ini menyimpan konfigurasi:
+## 2. Environment Variables Configuration
+
+This file contains configuration values for the project:
 
 ```env
 # Environment Configuration
@@ -88,9 +88,10 @@ DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_
 CERT_FILE=
 KEY_FILE=
 ```
-## 3. Docker Compose
+## 3. Docker Compose Configuration
+
 docker-compose.db.yml
-Untuk menjalankan database PostgreSQL:
+To run the PostgreSQL database:
 
 ```yml
 version: "3.8"
@@ -119,7 +120,7 @@ volumes:
 ```
 
 docker-compose.yml
-Untuk menjalankan seluruh aplikasi dan database:
+To run the entire application and database:
 
 ``` yml
 version: '3.8'
@@ -162,59 +163,66 @@ volumes:
   postgres_data:
 ```
 
-## 4. Setup dan Jalankan Proyek
-### step 1: Persiapan Lingkungan
-Salin file .env.example menjadi .env dan sesuaikan variabel lingkungan sesuai kebutuhan Anda.
-Pastikan Docker dan Docker Compose sudah terinstal di sistem Anda.
+## 4. Setup and Run the Project
+### step 1: Prepare the Environment
+Copy the .env.example file to .env and adjust the environment variables according to your needs.
+Ensure that Docker and Docker Compose are installed on your system.
 
-### step 2: Menjalankan Database Saja
-Jika Anda hanya perlu menjalankan database, gunakan file docker-compose.db.yml untuk menjalankan database:
+### step 2: Run Database Only
+If you only need to run the database, use the docker-compose.db.yml file to start the database:
 
 ```bash
 docker-compose -f docker-compose.db.yml up -d
 ```
 
-### step 3: Menjalankan Aplikasi dan Database
-Jika Anda membutuhkan aplikasi dan database berjalan bersamaan, gunakan file docker-compose.yml untuk menjalankan seluruh aplikasi:
+### step 3: Run the Application and Database
+If you need both the application and database running together, use the docker-compose.yml file to start the entire application:
 
 ```bash
 docker-compose up -d
 ```
-> **Note**: Jika Anda hanya memerlukan database, cukup jalankan step 2 saja.
+> **Note**: If you only need the database, you can skip this step and run Step 2.
 
 
-### step 4: Membangun Proyek
-Sebelum menjalankan aplikasi, pastikan proyek Anda sudah dibangun terlebih dahulu. Gunakan perintah berikut untuk membangun proyek:
+### step 4: Build the Project
+Before running the application, make sure the project is built first. Use the following command to build the project:
 
 ```bash
 cargo build
 ```
 
-### step 5: Menjalankan Aplikasi
-Setelah proyek selesai dibangun, Anda dapat menjalankan aplikasi menggunakan perintah berikut:
+### step 5: Run the Application
+Once the project is built, you can run the application with the following command:
 
 ```bash
 cargo run
 ```
-> **Catatan**: Perintah cargo run secara otomatis akan melakukan build terlebih dahulu. Jika Anda sudah melakukan build sebelumnya, proses build bisa dilewati dengan menjalankan ```bash cargo run --release``` (untuk mode produksi) atau ```bash cargo run --no-build``` (untuk menjalankan aplikasi tanpa build ulang, jika build sudah ada).
+> **Note**: The ```bash cargo run``` command will automatically build the project first. If you have already built the project, you can skip the build step by running
+> ```bash
+> cargo run --release
+> ```
+> Or, to run without rebuilding the project (if the build already exists):
+> ```bash
+> cargo run --no-build
+> ```
 
 
-### step 6: Menggunakan cargo watch untuk Monitoring Perubahan
-Jika Anda ingin aplikasi berjalan otomatis setiap kali ada perubahan pada kode, Anda bisa menggunakan cargo watch untuk memonitor perubahan dan menjalankan ulang aplikasi setiap kali kode diubah:
+### step 6: Use Cargo Watch for Auto-Reload
+If you want the application to automatically reload whenever there’s a change in the code, you can use ```cargo watch``` to monitor file changes and restart the application:
 
 ```bash
 cargo watch -x run
 ```
-> **Catatan**: Sebelum menggunakan cargo watch, pastikan Anda sudah menginstal cargo-watch secara global. Anda bisa menginstalnya dengan perintah berikut:
+> **Note**: Before using ```cargo watch```, make sure you have it installed globally. You can install it with the following command:
 
 
 ```bash
 cargo install cargo-watch
 ```
-Setelah itu, Anda bisa menggunakan cargo watch untuk memonitor perubahan secara otomatis.
+Once installed, you can use cargo watch to automatically monitor changes.
 
-### step 7: Menjalankan Pengujian
-Anda juga dapat menjalankan pengujian unit dengan perintah:
+### step 7: Run Unit Tests
+You can also run unit tests with the following command:
 
 ```bash
 cargo test

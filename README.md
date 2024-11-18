@@ -165,18 +165,18 @@ volumes:
 
 ## 4. Setup and Run the Project
 ### step 1: Prepare the Environment
-Copy the .env.example file to .env and adjust the environment variables according to your needs.
+Copy the ```.env.example``` file to ```.env``` and adjust the environment variables according to your needs.
 Ensure that Docker and Docker Compose are installed on your system.
 
 ### step 2: Run Database Only
-If you only need to run the database, use the docker-compose.db.yml file to start the database:
+If you only need to run the database, use the ```docker-compose.db.yml``` file to start the database:
 
 ```bash
 docker-compose -f docker-compose.db.yml up -d
 ```
 
 ### step 3: Run the Application and Database
-If you need both the application and database running together, use the docker-compose.yml file to start the entire application:
+If you need both the application and database running together, use the ```docker-compose.yml``` file to start the entire application:
 
 ```bash
 docker-compose up -d

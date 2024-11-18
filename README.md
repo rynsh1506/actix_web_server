@@ -182,6 +182,7 @@ docker-compose up -d
 ```
 > **Catatan**: Jika Anda hanya memerlukan database, cukup jalankan langkah 2 saja.
 
+
 Langkah 4: Membangun Proyek
 Sebelum menjalankan aplikasi, pastikan proyek Anda sudah dibangun terlebih dahulu. Gunakan perintah berikut untuk membangun proyek:
 
@@ -197,6 +198,7 @@ cargo run
 ```
 > **Catatan**: Perintah cargo run secara otomatis akan melakukan build terlebih dahulu. Jika Anda sudah melakukan build sebelumnya, proses build bisa dilewati dengan menjalankan cargo run --release (untuk mode produksi) atau cargo run --no-build (untuk menjalankan aplikasi tanpa build ulang, jika build sudah ada).
 
+
 Langkah 6: Menggunakan cargo watch untuk Monitoring Perubahan
 Jika Anda ingin aplikasi berjalan otomatis setiap kali ada perubahan pada kode, Anda bisa menggunakan cargo watch untuk memonitor perubahan dan menjalankan ulang aplikasi setiap kali kode diubah:
 
@@ -204,6 +206,7 @@ Jika Anda ingin aplikasi berjalan otomatis setiap kali ada perubahan pada kode, 
 cargo watch -x run
 ```
 > **Catatan**: Sebelum menggunakan cargo watch, pastikan Anda sudah menginstal cargo-watch secara global. Anda bisa menginstalnya dengan perintah berikut:
+
 
 ```bash
 cargo install cargo-watch

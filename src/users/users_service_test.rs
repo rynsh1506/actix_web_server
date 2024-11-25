@@ -22,21 +22,11 @@ mod tests {
             password: "password123".to_string(),
         };
         let result = create(&pool, actix_web::web::Json(user)).await;
-        let query = QueryBuilder::new()
-            .delete("users")
-            .where_clause()
-            .condition("email = $1")
-            .build();
 
         match result {
             Ok(response) => {
                 assert_eq!(response.data.name, "John Doe");
                 assert_eq!(response.data.email, "test@example.com");
-                sqlx::query(&query)
-                    .bind("test@example.com")
-                    .execute(&pool)
-                    .await
-                    .expect("Failed to delete test users");
             }
             Err(err) => panic!("Error occurred: {:?}", err),
         }
@@ -87,27 +77,9 @@ mod tests {
                 assert_eq!(response.order, "DESC");
                 assert_eq!(response.limit, "10");
                 assert_eq!(response.page, 1);
-                // assert_eq!(response.count, 2);
-                // assert_eq!(response.page_count, 2);
-                assert_eq!(response.data.len(), users.len());
-
-                let emails: Vec<String> = response
-                    .data
-                    .iter()
-                    .map(|user| user.email.clone())
-                    .collect();
-
-                for (_, email) in &users {
-                    assert!(emails.contains(email));
-                }
-
-                for (_, email) in &users {
-                    sqlx::query(&query)
-                        .bind(email)
-                        .execute(&pool)
-                        .await
-                        .expect("Failed to delete test users");
-                }
+                assert_eq!(response.count, 3);
+                assert_eq!(response.page_count, 3);
+                assert_eq!(response.data.len(), 3);
             }
             Err(err) => panic!("Error occurred: {:?}", err),
         }

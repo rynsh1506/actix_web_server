@@ -126,19 +126,19 @@ docker-compose up -d
 
 SQLx CLI is used to manage database migrations and ensure the database structure matches the application's requirements. Below is a detailed guide on how to set up, perform migrations, and build your project.
 
-#### 1. Install SQLx CLI
+#### Install SQLx CLI
 ```bash
 cargo install sqlx-cli --features postgres
 ```
 
-#### 2. Add a Migration
+#### Add a Migration
 Create a new migration using the SQLx CLI. Use the following command to generate a new migration file:
 
 ```bash
 cargo migrate add -r <migration_name>
 ```
 
-#### 3. Write SQL for the Migration
+#### Write SQL for the Migration
 Edit the migration files to define the changes you want to make to your database.
 
 ```up``` migration
@@ -160,15 +160,17 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS users;
 ````
 
-#### 4. Run the Migrations and Revert
+#### Run the Migrations and Revert
 Run the migrations to apply the changes to your database. Use the following command:
 
 ```bash
 sqlx migrate run
+
+# if you want to revert migration
 sqlx migrate revert
 ```
 
-#### 5. Build the Project
+#### Build the Project
 After setting up the migrations, build your project to ensure everything is correctly configured:
 
 ```bash

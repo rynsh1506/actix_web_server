@@ -50,6 +50,16 @@ jobs:
       - name: Install dependencies
         run: cargo build --release
 
+      # Install sqlx-cli
+      - name: Install sqlx-cli
+        run: |
+          cargo install sqlx-cli --no-default-features --features postgres
+
+      # Run database migrations using sqlx-cli
+      - name: Run database migrations
+        run: |
+          sqlx migrate run
+
       # Run fmt (checks if code is formatted)
       - name: Run rustfmt
         run: cargo fmt -- --check

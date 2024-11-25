@@ -1,12 +1,13 @@
-use chrono::{offset::FixedOffset, Utc};
 use log::{Level, LevelFilter};
 use std::io::Write;
 
-pub fn init_logger() {
+use crate::utils::time::custom_timezone_with_fromat;
+
+pub fn init() {
     env_logger::Builder::new()
         .format(|buf, record| {
-            let wib_time = Utc::now().with_timezone(&FixedOffset::east_opt(7 * 3600).unwrap());
-            let formatted_time = wib_time.format("%Y-%m-%d %H:%M:%S").to_string();
+            std::env::set_var("RUST_BACKTRACE", "1");
+            let formatted_time = custom_timezone_with_fromat();
             let level = record.level();
             let target = record.target();
             let args = record.args();
@@ -36,6 +37,7 @@ pub fn init_logger() {
             // Write the formatted message with a newline
             writeln!(buf, "{}", message)
         })
-        .filter_level(LevelFilter::Debug) // Adjust level as needed
+        .filter_level(LevelFilter::Info) // Adjust level as needed
+        .parse_filters(&std::env::var("RUST_LOG").unwrap_or_default()) // Override dengan RUST_LOG
         .init();
 }

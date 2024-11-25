@@ -1,42 +1,27 @@
-use crate::{config::Config, middleware::Logger, routes::health_check};
+use crate::{
+    configs::config_env,
+    middlewares::middleware_logger,
+    router,
+    utils::errors::{json_error_handler, query_error_handler},
+};
 use actix_cors::Cors;
-use actix_web::{web, App, HttpServer};
+use actix_web::{
+    web::{self, JsonConfig, QueryConfig},
+    App, HttpServer,
+};
+use rustls::ServerConfig;
 use sqlx::PgPool;
 
-pub async fn start_http_server(config: Config, connection: PgPool) -> std::io::Result<()> {
-    HttpServer::new(move || {
-        App::new()
-            .wrap(Logger)
-            .wrap(
-                Cors::default()
-                    .allow_any_origin()
-                    .allow_any_method()
-                    .allow_any_header()
-                    .max_age(3600),
-            )
-            .app_data(web::Data::new(connection.clone()))
-            .route("/health", web::get().to(health_check))
-    })
-    .bind((config.app_config.app_host, config.app_config.app_port))
-    .unwrap_or_else(|_| {
-        log::error!(
-            "Port {} is already in use. Server will not start.",
-            config.app_config.app_port
-        );
-        std::process::exit(1);
-    })
-    .run()
-    .await
-}
-
-pub async fn start_https_server(
-    config: Config,
+pub async fn start_server(
+    config: config_env::Config,
     connection: PgPool,
-    server_config: rustls::ServerConfig,
+    tls: Option<ServerConfig>,
 ) -> std::io::Result<()> {
-    HttpServer::new(move || {
+    let server = HttpServer::new(move || {
         App::new()
-            .wrap(Logger)
+            .app_data(QueryConfig::default().error_handler(query_error_handler))
+            .app_data(JsonConfig::default().error_handler(json_error_handler))
+            .wrap(middleware_logger::Logger)
             .wrap(
                 Cors::default()
                     .allow_any_origin()
@@ -45,19 +30,15 @@ pub async fn start_https_server(
                     .max_age(3600),
             )
             .app_data(web::Data::new(connection.clone()))
-            .route("/health", web::get().to(health_check))
-    })
-    .bind_rustls_0_23(
-        (config.app_config.app_host, config.app_config.app_port),
-        server_config,
-    )
-    .unwrap_or_else(|_| {
-        log::error!(
-            "Port {} is already in use. Server will not start.",
-            config.app_config.app_port
-        );
-        std::process::exit(1);
-    })
-    .run()
-    .await
+            .configure(router::configure)
+    });
+
+    if let Some(tls_config) = tls {
+        server
+            .bind_rustls_0_23((config.app_host, config.app_port), tls_config)?
+            .run()
+            .await
+    } else {
+        server.bind((config.app_host, config.app_port))?.run().await
+    }
 }

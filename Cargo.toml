@@ -1,6 +1,6 @@
 [package]
 name = "web_server"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
@@ -13,18 +13,20 @@ sqlx = { version = "0.8.2", features = [
 ] }
 actix-web = { version = "4.9.0", features = ["rustls-0_23"] }
 actix-cors = "0.7.0"
+actix-rt = "2.10.0"
 rustls-pemfile = "2.2.0"
-rustls = "0.23.16"
+rustls = "0.23.18"
 futures = "0.3.31"
 chrono = { version = "0.4.38", features = ["serde"] }
 dotenvy = "0.15"
 serde = { version = "1.0.215", features = ["derive"] }
-serde_json = "1.0.132"
+serde_json = "1.0.133"
 jsonwebtoken = "9"
-bcrypt = "0.15.1"
 env_logger = "0.11.5"
 log = "0.4.22"
-validator = "0.19.0"
+validator = { version = "0.19.0", features = ["derive"] }
 thiserror = "2.0.3"
 tokio = { version = "1.41.1", features = ["full"] }
-uuid = { version = "1.11.0", features = ["serde", "v4"] }
+uuid = { version = "1.11.0", features = ["v4", "serde"] }
+argon2 = "0.5.3"
+fake = "3.0.1"

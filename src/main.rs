@@ -1,21 +1,21 @@
 use dotenvy::dotenv;
-use web_server::config::{load_config, load_db_connection, load_tls_config};
-use web_server::server::{start_http_server, start_https_server};
-use web_server::utils;
+use web_server::{
+    configs::config_load::{load_connection, load_env, load_tls_config},
+    server,
+    utils::logger,
+};
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    utils::init_logger();
+    logger::init();
     log::info!("Starting Actix application...");
-
-    let config = load_config().await?;
-    let connection = load_db_connection(&config).await?;
-
-    if config.app_config.app_env.eq("production") {
-        let server_config = load_tls_config().await?;
-        start_https_server(config, connection, server_config).await
+    let config = load_env();
+    let connection = load_connection(&config.db_url).await;
+    if config.app_env == "production" {
+        let tls_config = load_tls_config();
+        server::start_server(config, connection, Some(tls_config)).await
     } else {
-        start_http_server(config, connection).await
+        server::start_server(config, connection, None).await
     }
 }

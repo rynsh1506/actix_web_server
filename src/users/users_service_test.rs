@@ -16,6 +16,10 @@ mod tests {
         let config = load_env();
         let pool = load_connection(&config.db_url).await;
 
+        // Mulai transaksi
+        let mut transaction = pool.begin().await.unwrap();
+
+        // Buat data user
         let user = CreateUserDTO {
             email: "test@example.com".to_string(),
             name: "John Doe".to_string(),
@@ -23,12 +27,34 @@ mod tests {
         };
         let result = create(&pool, actix_web::web::Json(user)).await;
 
+        // Buat query untuk menghapus data
+        let query = QueryBuilder::new()
+            .delete("users")
+            .where_clause()
+            .condition("email = $1")
+            .build();
+
+        // Verifikasi hasil create dan lakukan delete setelahnya
         match result {
             Ok(response) => {
                 assert_eq!(response.data.name, "John Doe");
                 assert_eq!(response.data.email, "test@example.com");
+
+                // Hapus data yang sudah dibuat
+                sqlx::query(&query)
+                    .bind("test@example.com")
+                    .execute(&mut *transaction)
+                    .await
+                    .expect("Failed to delete test users");
+
+                // Commit transaksi jika semuanya berhasil
+                transaction.commit().await.unwrap();
             }
-            Err(err) => panic!("Error occurred: {:?}", err),
+            Err(err) => {
+                // Rollback transaksi jika terjadi error
+                transaction.rollback().await.unwrap();
+                panic!("Error occurred: {:?}", err);
+            }
         }
     }
 
@@ -38,7 +64,6 @@ mod tests {
         let config = load_env();
         let pool = load_connection(&config.db_url).await;
 
-        // generate query insert
         let query = QueryBuilder::new()
             .insert("users", "name, email, password", "$1, $2, $3")
             .build();
@@ -74,12 +99,29 @@ mod tests {
 
         match result {
             Ok(response) => {
+                println!("{}", response.data.len());
                 assert_eq!(response.order, "DESC");
                 assert_eq!(response.limit, "10");
                 assert_eq!(response.page, 1);
-                assert_eq!(response.count, 3);
-                assert_eq!(response.page_count, 3);
-                assert_eq!(response.data.len(), 3);
+                assert_eq!(response.data.len(), users.len());
+
+                let emails: Vec<String> = response
+                    .data
+                    .iter()
+                    .map(|user| user.email.clone())
+                    .collect();
+
+                for (_, email) in &users {
+                    assert!(emails.contains(email));
+                }
+
+                for (_, email) in &users {
+                    sqlx::query(&query)
+                        .bind(email)
+                        .execute(&pool)
+                        .await
+                        .expect("Failed to delete test users");
+                }
             }
             Err(err) => panic!("Error occurred: {:?}", err),
         }

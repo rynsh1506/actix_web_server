@@ -1,66 +1,6 @@
 # Web Server Project Template Documentation with Actix Web
 
-## 1. Project Structure
-
-Here’s the directory structure for the project:
-
-```plaintext
-web_server/
-├── .github/
-│   └── workflows/
-│       └── simple-ci.yml
-├── certs/
-│   ├── cert.pem
-│   ├── generate.txt
-│   └── private_key.pem
-├── migrations/
-├── src/
-│   ├── actor/
-│   │   └── mod.rs
-│   ├── config/
-│   │   ├── app_config.rs
-│   │   ├── builder.rs
-│   │   ├── certs_config.rs
-│   │   ├── config_loader.rs
-│   │   ├── db_config.rs
-│   │   └── mod.rs
-│   ├── db/
-│   │   ├── connection.rs
-│   │   └── mod.rs
-│   ├── handlers/
-│   │   └── mod.rs
-│   ├── middleware/
-│   │   ├── logger.rs
-│   │   └── mod.rs
-│   ├── models/
-│   │   └── mod.rs
-│   ├── routes/
-│   │   ├── health_check.rs
-│   │   └── mod.rs
-│   ├── utils/
-│   │   ├── errors.rs
-│   │   ├── init_logger.rs
-│   │   └── mod.rs
-│   ├── lib.rs
-│   ├── main.rs
-│   └── server.rs
-├── target/
-├── tests/
-│   ├── health_check.rs
-│   ├── main.rs
-│   └── test_establish_connection.rs
-├── .env
-├── .env.example
-├── .gitignore
-├── Cargo.lock
-├── Cargo.toml
-├── docker-compose.db.yml
-├── docker-compose.yml
-├── Dockerfile
-├── LICENSE
-└── README.md
-```
-## 2. Environment Variables Configuration
+## 1. Environment Variables Configuration
 
 This file contains configuration values for the project:
 
@@ -88,7 +28,7 @@ DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_
 CERT_FILE=
 KEY_FILE=
 ```
-## 3. Docker Compose Configuration
+## 2. Docker Compose Configuration
 
 ```docker-compose.db.yml```
 To run the PostgreSQL database:
@@ -163,7 +103,7 @@ volumes:
   postgres_data:
 ```
 
-## 4. Setup and Run the Project
+## 3. Setup and Run the Project
 ### step 1: Prepare the Environment
 Copy the ```.env.example``` file to ```.env``` and adjust the environment variables according to your needs.
 Ensure that Docker and Docker Compose are installed on your system.
@@ -226,7 +166,7 @@ You can also run unit tests with the following command:
 ```bash
 cargo test
 ```
-## 5. Suggestions and Feedback
+## 4. Suggestions and Feedback
 
 This documentation is made to help you understand how to run this project. If anything is unclear or if there's a simpler way to explain something, I would really appreciate it if you could provide feedback.
 

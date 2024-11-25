@@ -122,9 +122,54 @@ If you need both the application and database running together, use the ```docke
 docker-compose up -d
 ```
 
+### step 4: Migration and Build the Project
 
-### step 4: Build the Project
-Before running the application, make sure the project is built first. Use the following command to build the project:
+SQLx CLI is used to manage database migrations and ensure the database structure matches the application's requirements. Below is a detailed guide on how to set up, perform migrations, and build your project.
+
+#### 1. Install SQLx CLI
+```bash
+cargo install sqlx-cli --features postgres
+```
+
+#### 2. Add a Migration
+Create a new migration using the SQLx CLI. Use the following command to generate a new migration file:
+
+```bash
+cargo migrate add -r <migration_name>
+```
+
+#### 3. Write SQL for the Migration
+Edit the migration files to define the changes you want to make to your database.
+
+```up``` migration
+```sql
+-- Add up migration script here
+CREATE TABLE users (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+```down``` migration
+```sqlx
+-- Add down migration script here
+DROP TABLE IF EXISTS users;
+````
+
+#### 4. Run the Migrations and Revert
+Run the migrations to apply the changes to your database. Use the following command:
+
+```bash
+sqlx migrate run
+sqlx migrate revert
+```
+
+#### 5. Build the Project
+After setting up the migrations, build your project to ensure everything is correctly configured:
 
 ```bash
 cargo build

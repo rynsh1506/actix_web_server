@@ -8,35 +8,25 @@ use crate::{
         response_data::{ResponseData, ResponseDatas},
     },
 };
-use actix_web::web;
 use sqlx::PgPool;
 use validator::Validate;
 
 pub async fn create(
     pool: &PgPool,
-    payload: web::Json<CreateUserDTO>,
+    mut payload: CreateUserDTO,
 ) -> Result<ResponseData<GetUserDTO>, AppError> {
-    let payload = payload.into_inner();
-
     payload.validate().map_err(AppError::ValidationError)?;
 
-    let CreateUserDTO {
-        email,
-        name,
-        password,
-    } = payload;
-
-    let hashed_password = hash_password(password).await?;
+    payload.password = hash_password(payload.password).await?;
 
     let query = QueryBuilder::new()
         .insert("users", "name, password, email", "$1, $2, $3")
         .returning("id, name, email, created_at, updated_at")
         .build();
-
     let result = sqlx::query_as::<_, GetUserDTO>(&query)
-        .bind(name)
-        .bind(hashed_password)
-        .bind(email)
+        .bind(payload.name)
+        .bind(payload.password)
+        .bind(payload.email)
         .fetch_one(pool)
         .await
         .map_err(AppError::DatabaseError)?;
@@ -47,9 +37,9 @@ pub async fn create(
 
 pub async fn find_all(
     pool: &PgPool,
-    pagination: web::Query<QueryPagination>,
+    pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
-    let QueryPagination { limit, page, order } = pagination.into_inner();
+    let QueryPagination { limit, page, order } = pagination;
 
     let (limit, offset, page, order, limit_str) =
         QueryPagination::paginate(&QueryPagination { limit, page, order });
@@ -75,7 +65,7 @@ pub async fn find_all(
     Ok(ResponseDatas::new(
         limit_str,
         page,
-        count,
+        count as u64,
         result.len(),
         order,
         result,

@@ -27,7 +27,7 @@ async fn find_all(
     pool: web::Data<PgPool>,
     pagination: web::Query<QueryPagination>,
 ) -> Result<HttpResponse, AppError> {
-    match users_service::find_all(&pool, pagination).await {
+    match users_service::find_all(&pool, pagination.into_inner()).await {
         Ok(response) => Ok(HttpResponse::Ok().json(response)),
         Err(err) => Err(err),
     }
@@ -38,7 +38,7 @@ async fn create(
     pool: web::Data<PgPool>,
     payload: web::Json<CreateUserDTO>,
 ) -> Result<HttpResponse, AppError> {
-    match users_service::create(&pool, payload).await {
+    match users_service::create(&pool, payload.into_inner()).await {
         Ok(response) => Ok(HttpResponse::Created().json(response)),
         Err(err) => Err(err),
     }

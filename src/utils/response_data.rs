@@ -18,7 +18,7 @@ where
 pub struct ResponseDatas<T> {
     pub limit: String,
     pub page: i64,
-    pub count: i64,
+    pub count: u64,
     pub page_count: usize,
     pub order: String,
     pub data: T,
@@ -31,7 +31,7 @@ where
     pub fn new(
         limit: String,
         page: i64,
-        count: i64,
+        count: u64,
         page_count: usize,
         order: String,
         data: T,

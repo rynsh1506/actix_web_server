@@ -31,6 +31,7 @@ pub mod users {
         pub mod update_users_dto;
     }
     pub mod users_handler;
+    pub mod users_query;
     pub mod users_service;
     pub mod users_service_test;
 }

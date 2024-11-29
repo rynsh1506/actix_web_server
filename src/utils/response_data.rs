@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct ResponseData<T> {
     pub data: T,
 }
@@ -14,7 +14,7 @@ where
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct ResponseDatas<T> {
     pub limit: Option<i64>,
     pub page: i64,

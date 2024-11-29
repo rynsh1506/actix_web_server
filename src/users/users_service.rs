@@ -1,14 +1,17 @@
+use super::dto::{
+    create_users_dto::CreateUserDTO, get_users_dto::GetUserDTO, update_users_dto::UpdateUserDTO,
+};
 use crate::{
-    users::dto::{create_users_dto::CreateUserDTO, get_users_dto::GetUserDTO},
+    users::users_query,
     utils::{
         errors::AppError,
         password::hash_password,
-        query_builder::QueryBuilder,
         query_paginaton::QueryPagination,
         response_data::{ResponseData, ResponseDatas},
     },
 };
 use sqlx::PgPool;
+use uuid::Uuid;
 use validator::Validate;
 
 pub async fn create(
@@ -16,55 +19,44 @@ pub async fn create(
     mut payload: CreateUserDTO,
 ) -> Result<ResponseData<GetUserDTO>, AppError> {
     payload.validate().map_err(AppError::ValidationError)?;
-
     payload.password = hash_password(payload.password).await?;
-
-    let query = QueryBuilder::new()
-        .insert("users", "name, password, email", "$1, $2, $3")
-        .returning("id, name, email, created_at, updated_at")
-        .build();
-    let result = sqlx::query_as::<_, GetUserDTO>(&query)
-        .bind(payload.name)
-        .bind(payload.password)
-        .bind(payload.email)
-        .fetch_one(pool)
-        .await
-        .map_err(AppError::DatabaseError)?;
-
-    let create_response = ResponseData::new(result);
-    Ok(create_response)
+    let result = users_query::create_user_query(pool, payload).await?;
+    Ok(result)
 }
 
 pub async fn find_all(
     pool: &PgPool,
     pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
-    let (limit, offset, page, order) = pagination.paginate();
+    let result = users_query::find_all_users_query(pool, pagination).await?;
+    Ok(result)
+}
 
-    let count_query = QueryBuilder::new().from("users", "COUNT(*)").build();
-    let count: i64 = sqlx::query_scalar(&count_query)
-        .fetch_one(pool)
-        .await
-        .map_err(AppError::DatabaseError)?;
+pub async fn update(
+    pool: &PgPool,
+    id: Uuid,
+    payload: UpdateUserDTO,
+) -> Result<ResponseData<GetUserDTO>, AppError> {
+    payload.validate().map_err(AppError::ValidationError)?;
+    if !users_query::check_existence(pool, id).await? {
+        return Err(AppError::NotFound(format!("User with ID {} not found", id)));
+    }
+    let result = users_query::update_user_query(pool, id, payload).await?;
+    Ok(result)
+}
 
-    let query = QueryBuilder::new()
-        .from("users", "*")
-        .order_by("created_at", &order)
-        .limit(limit)
-        .offset(offset)
-        .build();
+pub async fn find(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
+    if !users_query::check_existence(pool, id).await? {
+        return Err(AppError::NotFound(format!("User with ID {} not found", id)));
+    }
+    let result = users_query::find_user_query(pool, id).await?;
+    Ok(result)
+}
 
-    let result = sqlx::query_as::<_, GetUserDTO>(&query)
-        .fetch_all(pool)
-        .await
-        .map_err(AppError::DatabaseError)?;
-
-    Ok(ResponseDatas::new(
-        limit,
-        page,
-        count,
-        result.len(),
-        order,
-        result,
-    ))
+pub async fn delete(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
+    if !users_query::check_existence(pool, id).await? {
+        return Err(AppError::NotFound(format!("User with ID {} not found", id)));
+    }
+    let result = users_query::delete_user_query(pool, id).await?;
+    Ok(result)
 }

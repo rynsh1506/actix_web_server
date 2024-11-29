@@ -1,13 +1,12 @@
 #[cfg(test)]
 mod tests {
-    use crate::{
-        users::dto::{create_users_dto::CreateUserDTO, get_users_dto::GetUserDTO},
-        utils::{
-            errors::AppError,
-            query_paginaton::QueryPagination,
-            response_data::{ResponseData, ResponseDatas},
-        },
+    use super::super::dto::{create_users_dto::CreateUserDTO, get_users_dto::GetUserDTO};
+    use crate::utils::{
+        errors::AppError,
+        query_paginaton::QueryPagination,
+        response_data::{ResponseData, ResponseDatas},
     };
+    use chrono::Utc;
     use mockall::mock;
     use uuid::Uuid;
 
@@ -51,8 +50,8 @@ mod tests {
                     id: Uuid::new_v4(),
                     name: payload.name.clone(),
                     email: payload.email.clone(),
-                    created_at: chrono::Utc::now(),
-                    updated_at: chrono::Utc::now(),
+                    created_at: payload.created_at,
+                    updated_at: payload.updated_at,
                 }))
             });
 
@@ -60,6 +59,8 @@ mod tests {
             email: "test@example.com".to_string(),
             name: "Test User".to_string(),
             password: "password123".to_string(),
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
         };
 
         let result = mock_repo.create_users_service(payload).await;

@@ -1,12 +1,11 @@
+use super::dto::{create_users_dto::CreateUserDTO, update_users_dto::UpdateUserDTO};
 use crate::{
-    users::{
-        dto::{create_users_dto::CreateUserDTO, update_users_dto::UpdateUserDTO},
-        users_service,
-    },
+    users::users_service,
     utils::{errors::AppError, query_paginaton::QueryPagination},
 };
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 pub fn handler() -> actix_web::Scope {
     web::scope("/users")
@@ -18,8 +17,11 @@ pub fn handler() -> actix_web::Scope {
 }
 
 #[get("/{id}")]
-async fn find() -> HttpResponse {
-    HttpResponse::Ok().body("test")
+async fn find(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> Result<HttpResponse, AppError> {
+    match users_service::find(&pool, id.into_inner()).await {
+        Ok(response) => Ok(HttpResponse::Ok().json(response)),
+        Err(err) => Err(err),
+    }
 }
 
 #[get("")]
@@ -45,11 +47,21 @@ async fn create(
 }
 
 #[put("/{id}")]
-async fn update(_payload: web::Json<UpdateUserDTO>) -> HttpResponse {
-    HttpResponse::Ok().body("test")
+async fn update(
+    pool: web::Data<PgPool>,
+    id: web::Path<Uuid>,
+    payload: web::Json<UpdateUserDTO>,
+) -> Result<HttpResponse, AppError> {
+    match users_service::update(&pool, id.into_inner(), payload.into_inner()).await {
+        Ok(response) => Ok(HttpResponse::Ok().json(response)),
+        Err(err) => Err(err),
+    }
 }
 
-#[delete("")]
-async fn delete() -> HttpResponse {
-    HttpResponse::Ok().body("test")
+#[delete("/{id}")]
+async fn delete(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> Result<HttpResponse, AppError> {
+    match users_service::delete(&pool, id.into_inner()).await {
+        Ok(response) => Ok(HttpResponse::Ok().json(response)),
+        Err(err) => Err(err),
+    }
 }

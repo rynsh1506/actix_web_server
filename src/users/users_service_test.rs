@@ -76,7 +76,7 @@ mod tests {
 
         mock_repo.expect_find_all_users_service().returning(|_| {
             Ok(ResponseDatas::new(
-                "10".to_string(),
+                10,
                 1,
                 2,
                 2,
@@ -100,7 +100,7 @@ mod tests {
             ))
         });
         let pagination = QueryPagination {
-            limit: Some("10".to_string()),
+            limit: Some(10),
             page: Some(1),
             order: Some("ASC".to_string()),
         };

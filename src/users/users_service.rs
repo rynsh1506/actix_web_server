@@ -39,10 +39,7 @@ pub async fn find_all(
     pool: &PgPool,
     pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
-    let QueryPagination { limit, page, order } = pagination;
-
-    let (limit, offset, page, order, limit_str) =
-        QueryPagination::paginate(&QueryPagination { limit, page, order });
+    let (limit, offset, page, order) = pagination.paginate();
 
     let count_query = QueryBuilder::new().from("users", "COUNT(*)").build();
     let count: i64 = sqlx::query_scalar(&count_query)
@@ -63,9 +60,9 @@ pub async fn find_all(
         .map_err(AppError::DatabaseError)?;
 
     Ok(ResponseDatas::new(
-        limit_str,
+        limit,
         page,
-        count as u64,
+        count,
         result.len(),
         order,
         result,

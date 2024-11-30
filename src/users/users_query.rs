@@ -125,24 +125,16 @@ pub async fn find_all_users_query(
         .await
         .map_err(AppError::DatabaseError)?;
 
-    let query = QueryBuilder::new()
-        .from("users", "*")
-        .order_by("created_at", &order)
-        .limit(limit)
-        .offset(offset)
-        .build();
+    let mut query = QueryBuilder::new().from("users", "*");
+    for (key, value) in order.iter() {
+        query = query.order_by(key, value);
+    }
+    let query = query.limit(limit).offset(offset).build();
 
     let result = sqlx::query_as::<_, GetUserDTO>(&query)
         .fetch_all(pool)
         .await
         .map_err(AppError::DatabaseError)?;
 
-    Ok(ResponseDatas::new(
-        limit,
-        page,
-        count,
-        result.len(),
-        order,
-        result,
-    ))
+    Ok(ResponseDatas::new(limit, page, count, result.len(), result))
 }

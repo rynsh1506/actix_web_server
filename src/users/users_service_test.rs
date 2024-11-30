@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use super::super::dto::{create_users_dto::CreateUserDTO, get_users_dto::GetUserDTO};
     use crate::utils::{
         errors::AppError,
@@ -20,6 +22,8 @@ mod tests {
             &self,
             pagination: QueryPagination,
         ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError>;
+
+        async fn find_users_service(&self, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError>;
     }
 
     mock! {
@@ -35,6 +39,8 @@ mod tests {
                 &self,
                 pagination: QueryPagination,
             ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError>;
+
+            async fn find_users_service(&self, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError>;
         }
 
     }
@@ -66,9 +72,9 @@ mod tests {
         let result = mock_repo.create_users_service(payload).await;
 
         assert!(result.is_ok());
-        let user = result.unwrap();
-        assert_eq!(user.data.name, "Test User");
-        assert_eq!(user.data.email, "test@example.com");
+        let response = result.unwrap();
+        assert_eq!(response.data.name, "Test User");
+        assert_eq!(response.data.email, "test@example.com");
     }
 
     #[tokio::test]
@@ -81,7 +87,6 @@ mod tests {
                 1,
                 2,
                 2,
-                "ASC".to_string(),
                 vec![
                     GetUserDTO {
                         id: uuid::Uuid::new_v4(),
@@ -100,17 +105,44 @@ mod tests {
                 ],
             ))
         });
+
+        let mut order = HashMap::new();
+        order.insert("created_at".to_string(), "asc".to_string());
+
         let pagination = QueryPagination {
-            limit: Some(10),
-            page: Some(1),
-            order: Some("ASC".to_string()),
+            limit: 10,
+            page: 1,
+            order,
         };
 
         let result = mock_repo.find_all_users_service(pagination).await;
 
         assert!(result.is_ok());
-        let response_data = result.unwrap();
-        assert_eq!(response_data.data.len(), 2);
-        assert_eq!(response_data.data[0].name, "Test User 1");
+        let response = result.unwrap();
+        assert_eq!(response.data.len(), 2);
+        assert_eq!(response.limit, Some(10));
+    }
+
+    #[tokio::test]
+    async fn test_find_users_service() {
+        let mut mock_repo = MockUserRepository::new();
+
+        mock_repo.expect_find_users_service().returning(|id| {
+            Ok(ResponseData::new(GetUserDTO {
+                id,
+                name: "Test User 1".to_string(),
+                email: "test1@example.com".to_string(),
+                created_at: chrono::Utc::now(),
+                updated_at: chrono::Utc::now(),
+            }))
+        });
+
+        let id = Uuid::new_v4();
+
+        let result = mock_repo.find_users_service(id).await;
+
+        assert!(result.is_ok());
+        let response = result.unwrap();
+        assert_eq!(response.data.id, id);
     }
 }

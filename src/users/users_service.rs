@@ -28,6 +28,7 @@ pub async fn find_all(
     pool: &PgPool,
     pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
+    pagination.validate().map_err(AppError::ValidationError)?;
     let result = users_query::find_all_users_query(pool, pagination).await?;
     Ok(result)
 }

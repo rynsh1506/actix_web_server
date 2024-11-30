@@ -4,6 +4,7 @@ use crate::{
     utils::{errors::AppError, query_paginaton::QueryPagination},
 };
 use actix_web::{delete, get, post, put, web, HttpResponse};
+use serde_qs::actix::QsQuery;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -27,7 +28,7 @@ async fn find(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> Result<HttpRespon
 #[get("")]
 async fn find_all(
     pool: web::Data<PgPool>,
-    pagination: web::Query<QueryPagination>,
+    pagination: QsQuery<QueryPagination>,
 ) -> Result<HttpResponse, AppError> {
     match users_service::find_all(&pool, pagination.into_inner()).await {
         Ok(response) => Ok(HttpResponse::Ok().json(response)),

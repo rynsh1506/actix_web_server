@@ -28,9 +28,9 @@ async fn find(pool: web::Data<PgPool>, id: web::Path<Uuid>) -> Result<HttpRespon
 #[get("")]
 async fn find_all(
     pool: web::Data<PgPool>,
-    pagination: QsQuery<QueryPagination>,
+    query_pagination: QsQuery<QueryPagination>,
 ) -> Result<HttpResponse, AppError> {
-    match users_service::find_all(&pool, pagination.into_inner()).await {
+    match users_service::find_all(&pool, query_pagination.into_inner()).await {
         Ok(response) => Ok(HttpResponse::Ok().json(response)),
         Err(err) => Err(err),
     }

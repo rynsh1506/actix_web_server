@@ -20,6 +20,9 @@ pub enum AppError {
     #[error("Bad request")]
     BadRequest(String),
 
+    #[error("Duplicate entry")]
+    Conflict(String),
+
     #[error("Validation error")]
     ValidationError(#[from] ValidationErrors),
 
@@ -53,6 +56,7 @@ impl ResponseError for AppError {
                 AppError::TimeoutError(err) => err.to_string(),
                 AppError::RateLimitExceeded(err) => err.to_string(),
                 AppError::PasswordHashingError(err) => err.to_string(),
+                AppError::Conflict(err) => err.to_string(),
             },
             code: self.status_code().as_u16(),
             timestamp: custom_timezone_with_fromat(),
@@ -74,6 +78,7 @@ impl ResponseError for AppError {
             AppError::TimeoutError(_) => StatusCode::REQUEST_TIMEOUT,
             AppError::RateLimitExceeded(_) => StatusCode::TOO_MANY_REQUESTS,
             AppError::PasswordHashingError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::Conflict(_) => StatusCode::CONFLICT,
         }
     }
 }

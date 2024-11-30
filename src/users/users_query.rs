@@ -7,23 +7,8 @@ use crate::utils::{
     query_paginaton::QueryPagination,
     response_data::{ResponseData, ResponseDatas},
 };
-use sqlx::{PgPool, Pool, Postgres};
+use sqlx::PgPool;
 use uuid::Uuid;
-
-pub async fn check_existence(pool: &Pool<Postgres>, id: Uuid) -> Result<bool, AppError> {
-    let query = QueryBuilder::new()
-        .from("users", "COUNT(*)")
-        .where_clause()
-        .condition("id = $1")
-        .build();
-    let count: i64 = sqlx::query_scalar(&query)
-        .bind(id)
-        .fetch_one(pool)
-        .await
-        .map_err(AppError::DatabaseError)?;
-
-    Ok(count > 0)
-}
 
 pub async fn delete_user_query(
     pool: &PgPool,
@@ -38,9 +23,10 @@ pub async fn delete_user_query(
 
     let result = sqlx::query_as::<_, GetUserDTO>(&query)
         .bind(id)
-        .fetch_one(pool)
+        .fetch_optional(pool)
         .await
-        .map_err(AppError::DatabaseError)?;
+        .map_err(AppError::DatabaseError)?
+        .ok_or(AppError::NotFound(format!("User with ID {} not found", id)))?;
 
     Ok(ResponseData::new(result))
 }
@@ -57,9 +43,10 @@ pub async fn find_user_query(
 
     let result = sqlx::query_as::<_, GetUserDTO>(&query)
         .bind(id)
-        .fetch_one(pool)
+        .fetch_optional(pool)
         .await
-        .map_err(AppError::DatabaseError)?;
+        .map_err(AppError::DatabaseError)?
+        .ok_or(AppError::NotFound(format!("User with ID {} not found", id)))?;
 
     Ok(ResponseData::new(result))
 }
@@ -88,9 +75,10 @@ pub async fn update_user_query(
         .bind(email)
         .bind(updated_at)
         .bind(id)
-        .fetch_one(pool)
+        .fetch_optional(pool)
         .await
-        .map_err(AppError::DatabaseError)?;
+        .map_err(AppError::DatabaseError)?
+        .ok_or(AppError::NotFound(format!("User with ID {} not found", id)))?;
 
     Ok(ResponseData::new(result))
 }
@@ -109,16 +97,22 @@ pub async fn create_user_query(
         .bind(payload.email)
         .fetch_one(pool)
         .await
-        .map_err(AppError::DatabaseError)?;
+        .map_err(|e| match e {
+            sqlx::Error::Database(err) if err.is_unique_violation() => match err.constraint() {
+                Some(constraint) => AppError::Conflict(format!("{} already exists.", constraint)),
+                None => AppError::Conflict("Unique constraint violation.".to_string()),
+            },
+            _ => AppError::DatabaseError(e),
+        })?;
 
     Ok(ResponseData::new(result))
 }
 
 pub async fn find_all_users_query(
     pool: &PgPool,
-    pagination: QueryPagination,
+    query_pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
-    let (limit, offset, page, order) = pagination.paginate();
+    let (limit, offset, page, order) = query_pagination.paginate();
     let count_query = QueryBuilder::new().from("users", "COUNT(*)").build();
     let count: i64 = sqlx::query_scalar(&count_query)
         .fetch_one(pool)

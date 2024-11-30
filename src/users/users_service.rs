@@ -26,10 +26,12 @@ pub async fn create(
 
 pub async fn find_all(
     pool: &PgPool,
-    pagination: QueryPagination,
+    query_pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
-    pagination.validate().map_err(AppError::ValidationError)?;
-    let result = users_query::find_all_users_query(pool, pagination).await?;
+    query_pagination
+        .validate()
+        .map_err(AppError::ValidationError)?;
+    let result = users_query::find_all_users_query(pool, query_pagination).await?;
     Ok(result)
 }
 
@@ -39,25 +41,16 @@ pub async fn update(
     payload: UpdateUserDTO,
 ) -> Result<ResponseData<GetUserDTO>, AppError> {
     payload.validate().map_err(AppError::ValidationError)?;
-    if !users_query::check_existence(pool, id).await? {
-        return Err(AppError::NotFound(format!("User with ID {} not found", id)));
-    }
     let result = users_query::update_user_query(pool, id, payload).await?;
     Ok(result)
 }
 
 pub async fn find(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
-    if !users_query::check_existence(pool, id).await? {
-        return Err(AppError::NotFound(format!("User with ID {} not found", id)));
-    }
     let result = users_query::find_user_query(pool, id).await?;
     Ok(result)
 }
 
 pub async fn delete(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
-    if !users_query::check_existence(pool, id).await? {
-        return Err(AppError::NotFound(format!("User with ID {} not found", id)));
-    }
     let result = users_query::delete_user_query(pool, id).await?;
     Ok(result)
 }

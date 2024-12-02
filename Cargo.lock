@@ -2976,6 +2976,7 @@ dependencies = [
  "jsonwebtoken",
  "log",
  "mockall",
+ "regex",
  "rustls",
  "rustls-pemfile",
  "serde",

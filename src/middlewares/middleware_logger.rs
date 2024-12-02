@@ -7,9 +7,9 @@ use log::{error, info, warn};
 use std::task::{Context, Poll};
 use std::time::Instant;
 
-pub struct Logger;
+pub struct LoggerMiddleware;
 
-impl<S, B> Transform<S, ServiceRequest> for Logger
+impl<S, B> Transform<S, ServiceRequest> for LoggerMiddleware
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,
@@ -17,20 +17,20 @@ where
 {
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Transform = LoggerService<S>;
+    type Transform = LoggerMiddlewareService<S>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ok(LoggerService { service })
+        ok(LoggerMiddlewareService { service })
     }
 }
 
-pub struct LoggerService<S> {
+pub struct LoggerMiddlewareService<S> {
     service: S,
 }
 
-impl<S, B> Service<ServiceRequest> for LoggerService<S>
+impl<S, B> Service<ServiceRequest> for LoggerMiddlewareService<S>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,

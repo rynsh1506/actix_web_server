@@ -1,6 +1,6 @@
 use super::time::custom_timezone_with_fromat;
 use actix_web::{
-    error::{JsonPayloadError, QueryPayloadError},
+    error::{JsonPayloadError, PathError, QueryPayloadError},
     http::{header::ContentType, StatusCode},
     HttpRequest, HttpResponse, ResponseError,
 };
@@ -40,6 +40,9 @@ pub enum AppError {
 
     #[error("Password hashing error")]
     PasswordHashingError(String),
+
+    #[error("Password verify error")]
+    InvalidCredentials(String),
 }
 
 impl ResponseError for AppError {
@@ -57,6 +60,7 @@ impl ResponseError for AppError {
                 AppError::RateLimitExceeded(err) => err.to_string(),
                 AppError::PasswordHashingError(err) => err.to_string(),
                 AppError::Conflict(err) => err.to_string(),
+                AppError::InvalidCredentials(err) => err.to_string(),
             },
             code: self.status_code().as_u16(),
             timestamp: custom_timezone_with_fromat(),
@@ -78,6 +82,7 @@ impl ResponseError for AppError {
             AppError::TimeoutError(_) => StatusCode::REQUEST_TIMEOUT,
             AppError::RateLimitExceeded(_) => StatusCode::TOO_MANY_REQUESTS,
             AppError::PasswordHashingError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::InvalidCredentials(_) => StatusCode::UNAUTHORIZED,
             AppError::Conflict(_) => StatusCode::CONFLICT,
         }
     }
@@ -113,5 +118,13 @@ pub fn json_error_handler(err: JsonPayloadError, _req: &HttpRequest) -> actix_we
 }
 
 pub fn query_error_handler(err: QueryPayloadError, _req: &HttpRequest) -> actix_web::Error {
+    AppError::BadRequest(err.to_string()).into()
+}
+
+pub fn path_error_handler(err: PathError, _req: &HttpRequest) -> actix_web::Error {
+    AppError::BadRequest(err.to_string()).into()
+}
+
+pub fn qs_query_error_handler(err: serde_qs::Error, _req: &HttpRequest) -> actix_web::Error {
     AppError::BadRequest(err.to_string()).into()
 }

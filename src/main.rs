@@ -12,10 +12,13 @@ async fn main() -> std::io::Result<()> {
     log::info!("Starting Actix application...");
     let config = load_env();
     let connection = load_connection(&config.db_url).await;
-    if config.app_env == "production" {
-        let tls_config = load_tls_config();
-        server::start_server(config, connection, Some(tls_config)).await
-    } else {
-        server::start_server(config, connection, None).await
-    }
+    let tls_config = load_tls_config();
+
+    server::start_server(
+        config.clone(),
+        connection,
+        tls_config,
+        config.app_env == "producton",
+    )
+    .await
 }

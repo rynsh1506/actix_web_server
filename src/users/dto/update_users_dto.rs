@@ -1,3 +1,4 @@
+use crate::users::entity::User;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
@@ -19,4 +20,17 @@ pub struct UpdateUserDTO {
 
     #[serde(default = "default_updated_at")]
     pub updated_at: DateTime<Utc>,
+}
+
+impl From<UpdateUserDTO> for User {
+    fn from(value: UpdateUserDTO) -> Self {
+        User {
+            id: None,
+            name: value.name,
+            email: value.email,
+            password: value.password,
+            created_at: None,
+            updated_at: Some(Utc::now()),
+        }
+    }
 }

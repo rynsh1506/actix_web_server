@@ -1,19 +1,20 @@
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
-    use super::super::dto::{
-        create_users_dto::CreateUserDTO, get_users_dto::GetUserDTO, update_users_dto::UpdateUserDTO,
-    };
-    use crate::utils::{
-        errors::AppError,
-        query_paginaton::QueryPagination,
-        response_data::{ResponseData, ResponseDatas},
+    use crate::{
+        users::{
+            dto::{CreateUserDTO, GetUserDTO, UpdateUserDTO},
+            entity::User,
+        },
+        utils::{
+            errors::AppError,
+            query_paginaton::QueryPagination,
+            response_data::{ResponseData, ResponseDatas},
+        },
     };
     use chrono::Utc;
     use mockall::mock;
+    use std::collections::HashMap;
     use uuid::Uuid;
-    use validator::Validate;
 
     #[async_trait::async_trait]
     pub trait UserRepo {
@@ -70,21 +71,14 @@ mod tests {
         mock_repo
             .expect_create_users_service()
             .returning(|payload| {
-                Ok(ResponseData::new(GetUserDTO {
-                    id: Uuid::new_v4(),
-                    name: payload.name.clone(),
-                    email: payload.email.clone(),
-                    created_at: payload.created_at,
-                    updated_at: payload.updated_at,
-                }))
+                let user: User = payload.into();
+                Ok(ResponseData::new(GetUserDTO { ..user.into() }))
             });
 
         let payload = CreateUserDTO {
             email: "test@example.com".to_string(),
             name: "Test User".to_string(),
             password: "password123".to_string(),
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
         };
 
         let result = mock_repo.create_users_service(payload).await;
@@ -102,9 +96,6 @@ mod tests {
         mock_repo
             .expect_find_all_users_service()
             .returning(|query_pagination| {
-                query_pagination
-                    .validate()
-                    .map_err(AppError::ValidationError)?;
                 let (limit, offset, page, order) = query_pagination.paginate();
                 let mut users = vec![
                     GetUserDTO {

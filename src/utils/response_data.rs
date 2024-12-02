@@ -20,7 +20,7 @@ pub struct ResponseDatas<T> {
     pub page: i64,
     pub page_count: u64,
     pub count: u64,
-    pub item_count: u64,
+    pub current_count: u64,
     pub data: T,
 }
 
@@ -28,7 +28,7 @@ impl<T> ResponseDatas<T>
 where
     T: Serialize,
 {
-    pub fn new(limit: i64, page: i64, count: i64, item_count: usize, data: T) -> Self {
+    pub fn new(limit: i64, page: i64, count: i64, current_count: usize, data: T) -> Self {
         let page_count: u64 = if limit == i64::MAX {
             1
         } else {
@@ -40,7 +40,7 @@ where
             page,
             count: count as u64,
             page_count,
-            item_count: item_count as u64,
+            current_count: current_count as u64,
             data,
         }
     }

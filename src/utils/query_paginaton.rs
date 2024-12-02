@@ -4,7 +4,7 @@ use validator::{Validate, ValidationError};
 
 fn default_order() -> HashMap<String, String> {
     let mut default = HashMap::new();
-    default.insert("id".to_string(), "DESC".to_string());
+    default.insert("created_at".to_string(), "DESC".to_string());
     default
 }
 
@@ -58,5 +58,25 @@ impl QueryPagination {
             .collect();
 
         (limit, offset, page, order)
+    }
+}
+
+pub struct ResultWithPagination<T> {
+    pub limit: i64,
+    pub page: i64,
+    pub count: i64,
+    pub current_count: usize,
+    pub data: T,
+}
+
+impl<T> ResultWithPagination<T> {
+    pub fn new(limit: i64, page: i64, count: i64, current_count: usize, data: T) -> Self {
+        Self {
+            limit,
+            page,
+            count,
+            current_count,
+            data,
+        }
     }
 }

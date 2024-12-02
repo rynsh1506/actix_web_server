@@ -1,6 +1,6 @@
+use crate::users::entity::User;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{postgres::PgRow, FromRow, Row};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -12,14 +12,14 @@ pub struct GetUserDTO {
     pub updated_at: DateTime<Utc>,
 }
 
-impl<'r> FromRow<'r, PgRow> for GetUserDTO {
-    fn from_row(row: &'r PgRow) -> Result<Self, sqlx::Error> {
-        Ok(Self {
-            id: row.try_get("id")?,
-            name: row.try_get("name")?,
-            email: row.try_get("email")?,
-            created_at: row.try_get("created_at")?,
-            updated_at: row.try_get("updated_at")?,
-        })
+impl From<User> for GetUserDTO {
+    fn from(value: User) -> Self {
+        GetUserDTO {
+            id: value.id.unwrap(),
+            name: value.name.unwrap(),
+            email: value.email.unwrap(),
+            created_at: value.created_at.unwrap(),
+            updated_at: value.updated_at.unwrap(),
+        }
     }
 }

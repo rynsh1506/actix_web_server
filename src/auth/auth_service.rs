@@ -5,11 +5,15 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
-    auth::dto::{jwt_dto::JwtDto, Claims, LoginDto},
+    auth::dto::{
+        jwt_dto::{JwtDto, RefreshJwtDto},
+        Claims, LoginDto,
+    },
     server::AppState,
     users::{dto::CreateUserDTO, users_query},
     utils::{
         errors::AppError,
+        jwt::verify_refresh_jwt,
         password::{hash_password, verify_password},
         response_data::ResponseData,
     },
@@ -40,6 +44,8 @@ pub async fn login(
     app_state: &web::Data<AppState>,
     payload: LoginDto,
 ) -> Result<ResponseData<JwtDto>, AppError> {
+    payload.validate().map_err(AppError::ValidationError)?;
+
     let LoginDto { email, password } = payload;
 
     let result = users_query::login_users_query(pool, &email).await?;
@@ -55,8 +61,21 @@ pub async fn login(
     }))
 }
 
-pub async fn refresh() -> Result<ResponseData<JwtDto>, AppError> {
-    todo!()
+pub async fn refresh(
+    payload: RefreshJwtDto,
+    app_state: &web::Data<AppState>,
+) -> Result<ResponseData<JwtDto>, AppError> {
+    payload.validate().map_err(AppError::ValidationError)?;
+
+    let user_id = verify_refresh_jwt(payload.refresh_token, app_state)?;
+
+    let access_token = generate_token(user_id, app_state)?;
+    let refresh_token = generate_refresh_token(user_id, app_state)?;
+
+    Ok(ResponseData::new(JwtDto {
+        access_token,
+        refresh_token,
+    }))
 }
 
 fn generate_token(user_id: Uuid, app_state: &web::Data<AppState>) -> Result<String, AppError> {
@@ -95,7 +114,7 @@ fn generate_refresh_token(
     encode(
         &Header::default(),
         &refresh_claims,
-        &EncodingKey::from_secret(app_state.secret_key.as_bytes()),
+        &EncodingKey::from_secret(app_state.refresh_key.as_bytes()),
     )
     .map_err(|err| AppError::InternalServerError(err.to_string()))
 }

@@ -1,8 +1,11 @@
 use crate::{auth::dto::Claims, server::AppState};
 use actix_web::{web, HttpRequest};
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use uuid::Uuid;
 
-pub async fn verify_jwt(req: &HttpRequest, state: &web::Data<AppState>) -> Result<Claims, String> {
+use super::errors::AppError;
+
+pub fn verify_jwt(req: &HttpRequest, state: &web::Data<AppState>) -> Result<Claims, String> {
     let auth_header = req.headers().get("Authorization").cloned();
 
     if let Some(auth_value) = auth_header {
@@ -25,5 +28,18 @@ pub async fn verify_jwt(req: &HttpRequest, state: &web::Data<AppState>) -> Resul
         }
     } else {
         Err("Missing Authorization header".into())
+    }
+}
+
+pub fn verify_refresh_jwt(
+    refresh_token: String,
+    state: &web::Data<AppState>,
+) -> Result<Uuid, AppError> {
+    let decoding_key = DecodingKey::from_secret(state.refresh_key.as_ref().as_bytes());
+    let validation = Validation::new(Algorithm::HS256);
+
+    match decode::<Claims>(&refresh_token, &decoding_key, &validation) {
+        Ok(decoded_token) => Ok(decoded_token.claims.sub),
+        Err(e) => Err(AppError::Unauthorized(e.to_string())),
     }
 }

@@ -1,7 +1,8 @@
 use serde::Deserialize;
 use uuid::Uuid;
+use validator::Validate;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Validate)]
 pub struct LoginDto {
     pub email: String,
     pub password: String,

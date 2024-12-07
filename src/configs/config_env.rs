@@ -18,6 +18,7 @@ pub struct Config {
     pub app_host: String,
     pub app_port: u16,
     pub jwt_secret_key: String,
+    pub jwt_refresh_key: String,
     pub jwt_expiration_time: Duration,
     pub jwt_refresh_expiration_time: Duration,
 }
@@ -37,7 +38,8 @@ impl Config {
         };
         let app_host = env_var("APP_HOST", Some("localhost"))?;
         let app_port = env_var_u16("APP_PORT", 8080)?;
-        let jwt_secret_key = env_var("JWT_SECRET_KEY", Some("dev-jwt-secret-key"))?;
+        let jwt_secret_key = env_var("JWT_SECRET_KEY", Some("jwt-secret-key"))?;
+        let jwt_refresh_key = env_var("JWT_REFRESH_KEY", Some("jwt-refresh-key"))?;
         let jwt_expiration_seconds = env_var_u64("JWT_EXPIRATION_TIME", 86400)?;
         let jwt_refresh_expiration_seconds = env_var_u64("JWT_REFRESH_EXPIRATION_TIME", 604800)?;
 
@@ -52,6 +54,7 @@ impl Config {
             app_host,
             app_port,
             jwt_secret_key,
+            jwt_refresh_key,
             jwt_expiration_time,
             jwt_refresh_expiration_time,
         })

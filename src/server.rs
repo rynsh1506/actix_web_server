@@ -17,6 +17,7 @@ use std::sync::Arc;
 #[derive(Debug)]
 pub struct AppState {
     pub secret_key: Arc<String>,
+    pub refresh_key: Arc<String>,
     pub jwt_expiration_time: Arc<Duration>,
     pub jwt_refresh_expiration_time: Arc<Duration>,
 }
@@ -29,6 +30,7 @@ pub async fn start_server(
 ) -> std::io::Result<()> {
     let app_state = web::Data::new(AppState {
         secret_key: Arc::new(config.jwt_secret_key),
+        refresh_key: Arc::new(config.jwt_refresh_key),
         jwt_expiration_time: Arc::new(config.jwt_expiration_time),
         jwt_refresh_expiration_time: Arc::new(config.jwt_refresh_expiration_time),
     });

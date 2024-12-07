@@ -63,7 +63,7 @@ where
         let (http_request, payload) = req.into_parts();
 
         let fut = async move {
-            match verify_jwt(&http_request, &state).await {
+            match verify_jwt(&http_request, &state) {
                 Ok(claims) => {
                     let req = ServiceRequest::from_parts(http_request, payload);
                     req.extensions_mut().insert(Arc::new(claims));

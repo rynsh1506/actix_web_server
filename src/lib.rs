@@ -54,7 +54,7 @@ pub mod auth {
         pub mod jwt_dto;
         pub mod login_dto;
         pub use jwt_dto::{Claims, JwtDto};
-        pub use login_dto::{GetLoginDto, LoginDto};
+        pub use login_dto::LoginDto;
     }
     pub mod auth_handler;
     pub mod auth_service;

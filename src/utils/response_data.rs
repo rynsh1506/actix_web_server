@@ -1,16 +1,24 @@
 use serde::Serialize;
 
+use super::time::custom_timezone_with_fromat;
+
 #[derive(Serialize, Debug)]
 pub struct ResponseData<T> {
+    pub message: &'static str,
     pub data: T,
+    pub timestamp: String,
 }
 
 impl<T> ResponseData<T>
 where
     T: Serialize,
 {
-    pub fn new(data: T) -> Self {
-        ResponseData { data }
+    pub fn new(data: T, message: &'static str) -> Self {
+        ResponseData {
+            message,
+            data,
+            timestamp: custom_timezone_with_fromat(),
+        }
     }
 }
 

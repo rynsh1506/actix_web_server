@@ -72,7 +72,10 @@ mod tests {
             .expect_create_users_service()
             .returning(|payload| {
                 let user: User = payload.into();
-                Ok(ResponseData::new(GetUserDTO { ..user.into() }))
+                Ok(ResponseData::new(
+                    GetUserDTO { ..user.into() },
+                    "data success full",
+                ))
             });
 
         let payload = CreateUserDTO {
@@ -206,7 +209,10 @@ mod tests {
             };
 
             if user.id.eq(&id) {
-                Ok(ResponseData::new(user))
+                Ok(ResponseData::new(
+                    user,
+                    "Data has been successfully retrieved",
+                ))
             } else {
                 Err(AppError::NotFound("User Not Found".to_string()))
             }
@@ -237,7 +243,10 @@ mod tests {
                 };
 
                 if user.id.eq(&id) {
-                    Ok(ResponseData::new(user))
+                    Ok(ResponseData::new(
+                        user,
+                        "Data has been successfully updated.",
+                    ))
                 } else {
                     Err(AppError::NotFound("User Not Found".to_string()))
                 }
@@ -278,7 +287,7 @@ mod tests {
             };
 
             if user.id.eq(&id) {
-                Ok(ResponseData::new(user))
+                Ok(ResponseData::new(user, "Data has ben successfuly deleted."))
             } else {
                 Err(AppError::NotFound("User Not Found".to_string()))
             }

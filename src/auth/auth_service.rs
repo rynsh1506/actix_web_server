@@ -33,10 +33,13 @@ pub async fn register(
     let access_token = generate_token(user_id, app_state)?;
     let refresh_token = generate_refresh_token(user_id, app_state)?;
 
-    Ok(ResponseData::new(JwtDto {
-        access_token,
-        refresh_token,
-    }))
+    Ok(ResponseData::new(
+        JwtDto {
+            access_token,
+            refresh_token,
+        },
+        "Token has been successfuly retrieved.",
+    ))
 }
 
 pub async fn login(
@@ -55,10 +58,13 @@ pub async fn login(
     let access_token = generate_token(result.id, app_state)?;
     let refresh_token = generate_refresh_token(result.id, app_state)?;
 
-    Ok(ResponseData::new(JwtDto {
-        access_token,
-        refresh_token,
-    }))
+    Ok(ResponseData::new(
+        JwtDto {
+            access_token,
+            refresh_token,
+        },
+        "Token has been successfuly retrieved.",
+    ))
 }
 
 pub async fn refresh(
@@ -72,10 +78,13 @@ pub async fn refresh(
     let access_token = generate_token(user_id, app_state)?;
     let refresh_token = generate_refresh_token(user_id, app_state)?;
 
-    Ok(ResponseData::new(JwtDto {
-        access_token,
-        refresh_token,
-    }))
+    Ok(ResponseData::new(
+        JwtDto {
+            access_token,
+            refresh_token,
+        },
+        "Token has been successfuly retrieved.",
+    ))
 }
 
 fn generate_token(user_id: Uuid, app_state: &web::Data<AppState>) -> Result<String, AppError> {

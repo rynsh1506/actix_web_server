@@ -41,12 +41,18 @@ pub async fn update(
     payload.validate().map_err(AppError::ValidationError)?;
     let result = users_query::update_user_query(pool, id, payload).await?;
 
-    Ok(ResponseData::new(result))
+    Ok(ResponseData::new(
+        result,
+        "Data has been successfuly updated.",
+    ))
 }
 
 pub async fn find(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
     let result = users_query::find_user_query(pool, id).await?;
-    Ok(ResponseData::new(result))
+    Ok(ResponseData::new(
+        result,
+        "Data has been successfuly retrieved.",
+    ))
 }
 
 pub async fn delete(
@@ -57,5 +63,8 @@ pub async fn delete(
     validate_user_id_in_token(req, &id)?;
 
     let result = users_query::delete_user_query(pool, id).await?;
-    Ok(ResponseData::new(result))
+    Ok(ResponseData::new(
+        result,
+        "Data has been successfuly deleted.",
+    ))
 }

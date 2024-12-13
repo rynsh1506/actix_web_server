@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     middlewares::middleware_auth::JwtAuthMiddleware,
     server::AppState,
@@ -55,9 +57,19 @@ async fn update(
 async fn delete(
     pool: web::Data<PgPool>,
     id: web::Path<Uuid>,
+    query: web::Query<HashMap<String, String>>,
     req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
-    match users_service::delete(&pool, id.into_inner(), &req).await {
+    let mode = query.get("mode").map(|s| s.as_str());
+
+    if let Some("hard") = mode {
+        match users_service::delete(&pool, id.into_inner(), &req).await {
+            Ok(response) => return Ok(HttpResponse::Ok().json(response)),
+            Err(err) => return Err(err),
+        }
+    }
+
+    match users_service::soft_delete(&pool, id.into_inner(), &req).await {
         Ok(response) => Ok(HttpResponse::Ok().json(response)),
         Err(err) => Err(err),
     }

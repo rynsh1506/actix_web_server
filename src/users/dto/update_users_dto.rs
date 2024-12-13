@@ -1,13 +1,12 @@
-use crate::users::entity::User;
-use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use crate::{
+    users::entity::{User, UserStatus},
+    utils::password::validate_password,
+};
+use chrono::Utc;
+use serde::Deserialize;
 use validator::Validate;
 
-fn default_updated_at() -> DateTime<Utc> {
-    Utc::now()
-}
-
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate)]
 pub struct UpdateUserDTO {
     #[validate(length(min = 3, max = 255))]
     pub name: Option<String>,
@@ -15,11 +14,13 @@ pub struct UpdateUserDTO {
     #[validate(email)]
     pub email: Option<String>,
 
-    #[validate(length(min = 8))]
-    pub password: Option<String>,
+    pub status: Option<UserStatus>,
+}
 
-    #[serde(default = "default_updated_at")]
-    pub updated_at: DateTime<Utc>,
+#[derive(Debug, Deserialize, Validate)]
+pub struct UpdateUserPasswordDto {
+    #[validate(custom(function = "validate_password"))]
+    pub password: String,
 }
 
 impl From<UpdateUserDTO> for User {
@@ -28,9 +29,26 @@ impl From<UpdateUserDTO> for User {
             id: None,
             name: value.name,
             email: value.email,
-            password: value.password,
+            password: None,
+            status: value.status,
             created_at: None,
             updated_at: Some(Utc::now()),
+            deleted_at: None,
+        }
+    }
+}
+
+impl From<UpdateUserPasswordDto> for User {
+    fn from(value: UpdateUserPasswordDto) -> Self {
+        User {
+            id: None,
+            name: None,
+            email: None,
+            password: Some(value.password),
+            status: None,
+            created_at: None,
+            updated_at: Some(Utc::now()),
+            deleted_at: None,
         }
     }
 }

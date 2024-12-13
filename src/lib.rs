@@ -34,25 +34,25 @@ pub mod users {
 
         pub use create_users_dto::CreateUserDTO;
         pub use get_users_dto::GetUserDTO;
-        pub use update_users_dto::UpdateUserDTO;
+        pub use update_users_dto::*;
     }
 
     pub mod entity {
         pub mod users_model;
 
-        pub use users_model::User;
+        pub use users_model::*;
     }
 
     pub mod users_handler;
     pub mod users_query;
     pub mod users_service;
-    pub mod users_service_test;
 }
 
 pub mod auth {
     pub mod dto {
         pub mod jwt_dto;
         pub mod login_dto;
+
         pub use jwt_dto::{Claims, JwtDto};
         pub use login_dto::LoginDto;
     }

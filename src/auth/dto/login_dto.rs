@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use sqlx::prelude::FromRow;
 use uuid::Uuid;
 use validator::Validate;
 
@@ -8,6 +9,7 @@ pub struct LoginDto {
     pub password: String,
 }
 
+#[derive(FromRow)]
 pub struct GetLoginDto {
     pub id: Uuid,
     pub email: String,

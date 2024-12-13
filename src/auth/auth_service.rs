@@ -28,7 +28,7 @@ pub async fn register(
 
     payload.password = hash_password(&payload.password)?;
 
-    let user_id = users_query::create_user_query(pool, payload).await?;
+    let user_id = users_query::create_user(pool, payload).await?;
 
     let access_token = generate_token(user_id, app_state)?;
     let refresh_token = generate_refresh_token(user_id, app_state)?;

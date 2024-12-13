@@ -1,41 +1,11 @@
-use crate::users::entity::User;
+use crate::{
+    users::entity::{users_model::UserStatus, User},
+    utils::password::validate_password,
+};
 use chrono::Utc;
-use regex::Regex;
 use serde::Deserialize;
 use uuid::Uuid;
-use validator::{Validate, ValidationError};
-
-fn validate_password(password: &str) -> Result<(), ValidationError> {
-    let lowercase = Regex::new(r"[a-z]").unwrap();
-    let uppercase = Regex::new(r"[A-Z]").unwrap();
-    let digit = Regex::new(r"\d").unwrap();
-
-    if password.len() < 8 {
-        let mut error = ValidationError::new("password_length");
-        error.message = Some("Password must be at least 8 characters long.".into());
-        return Err(error);
-    }
-
-    if !lowercase.is_match(password) {
-        let mut error = ValidationError::new("password_lowercase");
-        error.message = Some("Password must contain at least one lowercase letter (a-z).".into());
-        return Err(error);
-    }
-
-    if !uppercase.is_match(password) {
-        let mut error = ValidationError::new("password_uppercase");
-        error.message = Some("Password must contain at least one uppercase letter (A-Z).".into());
-        return Err(error);
-    }
-
-    if !digit.is_match(password) {
-        let mut error = ValidationError::new("password_digit");
-        error.message = Some("Password must contain at least one digit (0-9).".into());
-        return Err(error);
-    }
-
-    Ok(())
-}
+use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateUserDTO {
@@ -54,10 +24,12 @@ impl From<CreateUserDTO> for User {
         User {
             id: Some(Uuid::new_v4()),
             name: Some(value.name),
-            email: Some(value.email),
             password: Some(value.password),
+            email: Some(value.email),
+            status: Some(UserStatus::ACTIVE),
             created_at: Some(Utc::now()),
             updated_at: Some(Utc::now()),
+            deleted_at: None,
         }
     }
 }

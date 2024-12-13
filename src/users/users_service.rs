@@ -15,11 +15,19 @@ use sqlx::PgPool;
 use uuid::Uuid;
 use validator::Validate;
 
+pub async fn find(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
+    let result = users_query::find_user(pool, id).await?;
+    Ok(ResponseData::new(
+        result,
+        "Data has been successfuly retrieved.",
+    ))
+}
+
 pub async fn find_all(
     pool: &PgPool,
     query_pagination: QueryPagination,
 ) -> Result<ResponseDatas<Vec<GetUserDTO>>, AppError> {
-    let result = users_query::find_all_users_query(pool, query_pagination).await?;
+    let result = users_query::find_all_user(pool, query_pagination).await?;
 
     Ok(ResponseDatas::new(
         result.limit,
@@ -39,19 +47,12 @@ pub async fn update(
     validate_user_id_in_token(req, &id)?;
 
     payload.validate().map_err(AppError::ValidationError)?;
-    let result = users_query::update_user_query(pool, id, payload).await?;
+
+    let result = users_query::update_user(pool, id, payload).await?;
 
     Ok(ResponseData::new(
         result,
         "Data has been successfuly updated.",
-    ))
-}
-
-pub async fn find(pool: &PgPool, id: Uuid) -> Result<ResponseData<GetUserDTO>, AppError> {
-    let result = users_query::find_user_query(pool, id).await?;
-    Ok(ResponseData::new(
-        result,
-        "Data has been successfuly retrieved.",
     ))
 }
 
@@ -62,7 +63,21 @@ pub async fn delete(
 ) -> Result<ResponseData<GetUserDTO>, AppError> {
     validate_user_id_in_token(req, &id)?;
 
-    let result = users_query::delete_user_query(pool, id).await?;
+    let result = users_query::delete_user(pool, id).await?;
+    Ok(ResponseData::new(
+        result,
+        "Data has been successfuly deleted.",
+    ))
+}
+
+pub async fn soft_delete(
+    pool: &PgPool,
+    id: Uuid,
+    req: &HttpRequest,
+) -> Result<ResponseData<GetUserDTO>, AppError> {
+    validate_user_id_in_token(req, &id)?;
+
+    let result = users_query::delete_user_with_status(pool, id).await?;
     Ok(ResponseData::new(
         result,
         "Data has been successfuly deleted.",

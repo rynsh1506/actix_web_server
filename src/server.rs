@@ -1,5 +1,5 @@
 use crate::{
-    configs::config_env,
+    configs::{config_env, config_load::load_tls_config},
     middlewares::middleware_logger,
     router::{configure_v1, configure_v2},
     utils::errors::{
@@ -9,7 +9,6 @@ use crate::{
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use chrono::Duration;
-use rustls::ServerConfig;
 use serde_qs::actix::QsQueryConfig;
 use sqlx::PgPool;
 use std::sync::Arc;
@@ -25,7 +24,6 @@ pub struct AppState {
 pub async fn start_server(
     config: config_env::Config,
     connection: PgPool,
-    tls_config: ServerConfig,
     is_secure: bool,
 ) -> std::io::Result<()> {
     let app_state = web::Data::new(AppState {
@@ -61,6 +59,7 @@ pub async fn start_server(
     });
 
     if is_secure {
+        let tls_config = load_tls_config();
         server
             .bind_rustls_0_23((config.app_host, config.app_port), tls_config)?
             .run()

@@ -1,6 +1,6 @@
 use dotenvy::dotenv;
 use web_server::{
-    configs::config_load::{load_connection, load_env, load_tls_config},
+    configs::config_load::{load_connection, load_env},
     server,
     utils::logger,
 };
@@ -12,13 +12,6 @@ async fn main() -> std::io::Result<()> {
     log::info!("Starting Actix application...");
     let config = load_env();
     let connection = load_connection(&config.db_url).await;
-    let tls_config = load_tls_config();
 
-    server::start_server(
-        config.clone(),
-        connection,
-        tls_config,
-        config.app_env == "producton",
-    )
-    .await
+    server::start_server(config.clone(), connection, config.app_env == "producton").await
 }

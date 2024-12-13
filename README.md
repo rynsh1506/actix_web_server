@@ -150,7 +150,7 @@ cargo install sqlx-cli --features postgres
 Create a new migration using the SQLx CLI. Use the following command to generate a new migration file:
 
 ```bash
-cargo migrate add -r <migration_name>
+cargo migrate add <migration_name>
 ```
 
 #### Write SQL for the Migration
